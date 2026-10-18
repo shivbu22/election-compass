@@ -14,6 +14,14 @@
   <!-- Preconnect -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://generativelanguage.googleapis.com">
+  <link rel="dns-prefetch" href="https://api.mistral.ai">
+  <link rel="dns-prefetch" href="https://maps.googleapis.com">
+  <link rel="modulepreload" href="./app.js">
+  <link rel="modulepreload" href="./services/gemini.js">
+  <link rel="modulepreload" href="./services/mistral.js">
+  <link rel="modulepreload" href="./services/maps.js">
+  <link rel="modulepreload" href="./services/calendar.js">
 
   <!-- CRITICAL CSS — inlined for instant first paint -->
   <style>
@@ -395,12 +403,12 @@ html { scroll-behavior: smooth; }
     </div>
 
     <!-- Center: Navigation (centered absolutely within the bar) -->
-    <nav class="hidden md:flex items-center gap-8">
-      <button class="nav-item active text-sm font-medium text-muted" data-view="home">Home</button>
-      <button class="nav-item text-sm font-medium text-muted" data-view="timeline">Timeline</button>
-      <button class="nav-item text-sm font-medium text-muted" data-view="registration">Registration</button>
-      <button class="nav-item text-sm font-medium text-muted" data-view="locator">Booth</button>
-      <button class="nav-item text-sm font-medium text-muted" data-view="faq">FAQ</button>
+    <nav class="hidden md:flex items-center gap-8" role="tablist" aria-label="Main Navigation">
+      <button class="nav-item active text-sm font-medium text-muted" data-view="home" role="tab" aria-selected="true" aria-controls="home" id="tab-home">Home</button>
+      <button class="nav-item text-sm font-medium text-muted" data-view="timeline" role="tab" aria-selected="false" aria-controls="timeline" id="tab-timeline">Timeline</button>
+      <button class="nav-item text-sm font-medium text-muted" data-view="registration" role="tab" aria-selected="false" aria-controls="registration" id="tab-registration">Registration</button>
+      <button class="nav-item text-sm font-medium text-muted" data-view="locator" role="tab" aria-selected="false" aria-controls="locator" id="tab-locator">Booth</button>
+      <button class="nav-item text-sm font-medium text-muted" data-view="faq" role="tab" aria-selected="false" aria-controls="faq" id="tab-faq">FAQ</button>
     </nav>
     
     <!-- Right: Actions (flex-1 + justify-end to balance) -->
@@ -421,7 +429,7 @@ html { scroll-behavior: smooth; }
     <div class="max-w-6xl mx-auto relative h-full">
       
       <!-- VIEW 1: HOME -->
-      <div id="home" class="view-content active h-full flex flex-col justify-center min-h-[600px]">
+      <div id="home" class="view-content active h-full flex flex-col justify-center min-h-[600px]" role="tabpanel" aria-labelledby="tab-home">
         <div class="text-center max-w-4xl mx-auto mb-16 reveal active">
           <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-6">
             <span class="relative flex h-2 w-2">
@@ -482,10 +490,15 @@ html { scroll-behavior: smooth; }
             </div>
           </div>
         </div>
+        
+        <!-- Quick Stats Display -->
+        <div id="quick-stats-area" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 reveal active" style="transition-delay: 0.3s;">
+          <!-- Rendered via JS -->
+        </div>
       </div>
 
       <!-- VIEW 2: TIMELINE -->
-      <div id="timeline" class="view-content">
+      <div id="timeline" class="view-content" role="tabpanel" aria-labelledby="tab-timeline">
         <div class="max-w-5xl mx-auto pb-20">
           <div class="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-white/10 pb-6 reveal">
             <div>
@@ -501,7 +514,7 @@ html { scroll-behavior: smooth; }
       </div>
 
       <!-- VIEW 3: REGISTRATION WIZARD -->
-      <div id="registration" class="view-content">
+      <div id="registration" class="view-content" role="tabpanel" aria-labelledby="tab-registration">
         <div class="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[70vh]">
           <div class="text-center mb-10 reveal">
             <h2 class="font-headline font-black text-4xl text-white tracking-tight mb-2">Voter Registration</h2>
@@ -535,7 +548,7 @@ html { scroll-behavior: smooth; }
       </div>
 
       <!-- VIEW 4: LOCATOR -->
-      <div id="locator" class="view-content h-[calc(100vh-140px)]">
+      <div id="locator" class="view-content h-[calc(100vh-140px)]" role="tabpanel" aria-labelledby="tab-locator">
         <div class="flex flex-col h-full reveal">
           <div class="mb-6">
             <h2 class="font-headline font-black text-4xl text-white tracking-tight mb-2">Booth Locator</h2>
@@ -567,7 +580,7 @@ html { scroll-behavior: smooth; }
       </div>
 
       <!-- VIEW 5: FAQ -->
-      <div id="faq" class="view-content">
+      <div id="faq" class="view-content" role="tabpanel" aria-labelledby="tab-faq">
         <div class="max-w-4xl mx-auto pb-20">
           <div class="text-center mb-10 reveal">
             <h2 class="font-headline font-black text-4xl text-white tracking-tight mb-2">Knowledge Hub</h2>
@@ -584,7 +597,7 @@ html { scroll-behavior: smooth; }
       </div>
 
       <!-- VIEW 6: SETTINGS -->
-      <div id="settings" class="view-content">
+      <div id="settings" class="view-content" role="tabpanel" aria-labelledby="tab-settings">
         <div class="max-w-2xl mx-auto pb-20">
           <h2 class="font-headline font-black text-4xl text-white tracking-tight mb-8 reveal">System Settings</h2>
           

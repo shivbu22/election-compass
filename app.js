@@ -1,5 +1,6 @@
 import { FAQ_DATA } from './data/faq.js';
 import { TIMELINE_DATA } from './data/timeline.js';
+import { ELECTION_DATA } from './data/elections.js';
 import { MistralService, sanitizeInput } from './services/mistral.js';
 import { GeminiService } from './services/gemini.js';
 import { MapsService } from './services/maps.js';
@@ -42,6 +43,7 @@ const els = {
   timelineArea: document.getElementById('timeline-render-area'),
   faqArea: document.getElementById('faq-render-area'),
   faqSearch: document.getElementById('faq-search'),
+  quickStatsArea: document.getElementById('quick-stats-area'),
   
   locationInput: document.getElementById('location-input'),
   searchBoothBtn: document.getElementById('search-booth-btn'),
@@ -182,8 +184,18 @@ function init() {
   });
   
   renderWizard();
-  initAnimations();
-  bootSystem();
+  renderQuickStats();
+  
+  const initDeferred = () => {
+    initAnimations();
+    bootSystem();
+  };
+  
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(initDeferred);
+  } else {
+    setTimeout(initDeferred, 1);
+  }
 }
 
 function bootSystem() {
@@ -380,12 +392,33 @@ function renderWizard() {
   }
 }
 
+function renderQuickStats() {
+  if (!els.quickStatsArea || !ELECTION_DATA.quickStats) return;
+  
+  const fragment = document.createDocumentFragment();
+  ELECTION_DATA.quickStats.forEach((stat, index) => {
+    const div = document.createElement('div');
+    div.className = "glass p-4 rounded-xl flex flex-col items-center justify-center text-center stagger-fade";
+    div.style.animationDelay = `${index * 0.1}s`;
+    div.innerHTML = `
+      <span class="text-3xl mb-2">${stat.icon}</span>
+      <span class="font-headline font-black text-2xl text-white tracking-tight">${stat.value}</span>
+      <span class="text-[10px] text-muted font-bold uppercase tracking-wider mt-1">${stat.label}</span>
+    `;
+    fragment.appendChild(div);
+  });
+  els.quickStatsArea.innerHTML = '';
+  els.quickStatsArea.appendChild(fragment);
+}
+
 function renderTimeline() {
-  let html = '';
+  const fragment = document.createDocumentFragment();
   TIMELINE_DATA.phases.forEach((phase, index) => {
     const pointsHtml = phase.keyPoints.map(p => `<li>${p}</li>`).join('');
-    html += `
-      <div class="timeline-entry relative pl-10 mb-10 stagger-fade" style="animation-delay: ${index * 0.08}s">
+    const div = document.createElement('div');
+    div.className = "timeline-entry relative pl-10 mb-10 stagger-fade";
+    div.style.animationDelay = `${index * 0.08}s`;
+    div.innerHTML = `
         <div class="timeline-dot absolute left-[-7px] top-6 w-3.5 h-3.5 rounded-full border-[3px] bg-background z-10" style="border-color: ${phase.color}; box-shadow: 0 0 10px ${phase.color}40;"></div>
         <div class="glass glass-hover rounded-2xl p-8" style="border-left: 3px solid ${phase.color}">
           <span class="inline-block px-3 py-1 rounded-md text-[11px] font-bold tracking-widest mb-4 uppercase" style="color: ${phase.color}; background: ${phase.color}15;">${phase.date}</span>
@@ -400,10 +433,11 @@ function renderTimeline() {
             <span class="material-symbols-outlined text-[18px]">calendar_add_on</span> ADD REMINDER
           </button>
         </div>
-      </div>
     `;
+    fragment.appendChild(div);
   });
-  els.timelineArea.innerHTML = html;
+  els.timelineArea.innerHTML = '';
+  els.timelineArea.appendChild(fragment);
 }
 
 window.addToCalendar = async function(title, description) {
@@ -426,10 +460,12 @@ function renderFAQ(searchQuery = '') {
     return;
   }
   
-  let html = '';
+  const fragment = document.createDocumentFragment();
   filteredFaqs.forEach((faq, index) => {
-    html += `
-      <div class="faq-card glass rounded-xl overflow-hidden stagger-fade" style="animation-delay: ${(index * 0.04).toFixed(2)}s">
+    const div = document.createElement('div');
+    div.className = "faq-card glass rounded-xl overflow-hidden stagger-fade";
+    div.style.animationDelay = `${(index * 0.04).toFixed(2)}s`;
+    div.innerHTML = `
         <div class="p-5 cursor-pointer flex justify-between items-center hover:bg-white/5 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.faq-icon').classList.toggle('rotate-180')">
           <span class="font-semibold text-white text-[15px]">${faq.question}</span>
           <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
@@ -442,10 +478,11 @@ function renderFAQ(searchQuery = '') {
             ${faq.tags.map(t => `<span class="text-[10px] uppercase tracking-widest font-bold px-2 py-1 bg-white/5 border border-white/10 text-muted rounded-lg">#${t}</span>`).join('')}
           </div>
         </div>
-      </div>
     `;
+    fragment.appendChild(div);
   });
-  els.faqArea.innerHTML = html;
+  els.faqArea.innerHTML = '';
+  els.faqArea.appendChild(fragment);
 }
 
 // --- Booth Locator ---

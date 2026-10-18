@@ -21,3 +21,8 @@ stitch_ui.html
 
 # Lighthouse reports
 report*.json
+node_modules/
+.venv/
+venv/
+.env
+__pycache__/
